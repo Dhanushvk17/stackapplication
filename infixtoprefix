@@ -1,0 +1,67 @@
+import java.util.*;
+
+class Main {
+    static int pre(char op) {
+        switch (op) {
+            case '+': case '-': return 1;
+            case '*': case '/': return 2;
+            default: return -1;
+        }
+    }
+
+    static String reverse(String expr) {
+        StringBuilder rev = new StringBuilder();
+        for (int i = expr.length() - 1; i >= 0; i--) {
+            char ch = expr.charAt(i);
+            if (ch == '(') rev.append(')');
+            else if (ch == ')') rev.append('(');
+            else rev.append(ch);
+        }
+        return rev.toString();
+    }
+
+    static String infixToPostfix(String str) {
+        StringBuilder res = new StringBuilder();
+        Stack<Character> st = new Stack<>();
+        
+        for (char ch : str.toCharArray()) {
+            if (Character.isLetterOrDigit(ch)) {
+                res.append(ch);
+            } 
+            else if (ch == '(') {
+                st.push(ch);
+            } 
+            else if (ch == ')') {
+                while (!st.isEmpty() && st.peek() != '(') {
+                    res.append(st.pop());
+                }
+                st.pop(); 
+            } 
+            else {
+                while (!st.isEmpty() && pre(st.peek()) >= pre(ch)) {
+                    res.append(st.pop());
+                }
+                st.push(ch);
+            }
+        }
+        
+        while (!st.isEmpty()) {
+            res.append(st.pop());
+        }
+        
+        return res.toString();
+    }
+
+    static String infixToPrefix(String infix) {
+        String reversedInfix = reverse(infix);
+        String postfix = infixToPostfix(reversedInfix);
+        return new StringBuilder(postfix).reverse().toString();
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter infix expression: ");
+        String infix = scanner.nextLine();
+        System.out.println("Prefix Expression: " + infixToPrefix(infix));
+    }
+}
